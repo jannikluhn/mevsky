@@ -3,37 +3,40 @@
     <div>
       <p>Current State: {{ state }}</p>
     </div>
-    <div v-if="animationQueue.length != 0">
-      <p>Current Animation: {{ animationQueue[0].type }}</p>
-      <p>Progress: {{ animationQueue[0].progress }}</p>
-    </div>
-    <div v-else>
-      <p>No animation in progress</p>
-    </div>
+    <div>{{ animationQueue }}</div>
+    <div>{{ currentAnimation }}</div>
+
+    <div class="switch switch-off" ref="switch"></div>
+
+    <div class="bot bot-hidden" ref="bot"></div>
   </div>
 </template>
 
 <script>
-function newAnimation(type, duration) {
+function newAnimation(animationItems) {
   return {
-    type,
-    duration,
-    startTime: null,
-    progress: null,
+    items: animationItems,
   };
 }
 
-function newTurnOffAnimation() {
-  return newAnimation('turnOff', 2);
+function newAnimationItem(ref, preClasses, postClasses) {
+  return {
+    ref,
+    preClasses,
+    postClasses,
+  };
 }
 
-function newTurnOnAnimation() {
-  return newAnimation('turnOn', 2);
-}
-
-function newRevertTurnOnAnimation() {
-  return newAnimation('revertTurnOn', 2);
-}
+const turnOnAnimation = newAnimation([
+  newAnimationItem('switch', ['switch', 'switch-off', 'switch-turn-on'], ['switch', 'switch-on']),
+]);
+const revertTurnOnAnimation = newAnimation([
+  newAnimationItem('switch', ['switch', 'switch-on', 'switch-revert-turn-on'], ['switch', 'switch-off']),
+]);
+const turnOffAnimation = newAnimation([
+  newAnimationItem('bot', ['bot', 'bot-hidden', 'bot-turn-off'], ['bot', 'bot-hidden']),
+  newAnimationItem('switch', ['switch', 'switch-on', 'switch-turn-off'], ['switch', 'switch-off']),
+]);
 
 export default {
   name: 'MachineAnimation',
@@ -43,7 +46,7 @@ export default {
   data() {
     return {
       animationQueue: [],
-      animationRunning: false,
+      currentAnimation: null,
     };
   },
 
@@ -74,50 +77,144 @@ export default {
 
   methods: {
     turnOn() {
-      this.animationQueue.push(newTurnOnAnimation());
-      this.animate();
+      this.animationQueue.push(turnOnAnimation);
+      this.advanceAnimation();
     },
     turnOff() {
-      this.animationQueue.push(newTurnOffAnimation());
-      this.animate();
+      this.animationQueue.push(turnOffAnimation);
+      this.advanceAnimation();
     },
     revertTurnOn() {
-      this.animationQueue.push(newRevertTurnOnAnimation());
-      this.animate();
+      this.animationQueue.push(revertTurnOnAnimation);
+      this.advanceAnimation();
     },
 
-    animate() {
-      if (this.animationRunning) {
+    advanceAnimation() {
+      if (this.currentAnimation !== null) {
         return;
       }
-      this.animationRunning = true;
-
-      const step = (timestamp) => {
-        this.animationStep(timestamp);
-        if (this.animationQueue.length > 0) {
-          window.requestAnimationFrame(step);
-        } else {
-          this.animationRunning = false;
-        }
-      };
-      window.requestAnimationFrame(step);
-    },
-
-    animationStep(timestamp) {
       if (this.animationQueue.length === 0) {
+        this.currentAnimation = null;
         return;
       }
-      const animation = this.animationQueue[0];
+      this.currentAnimation = this.animationQueue.shift();
 
-      if (animation.startTime === null) {
-        animation.startTime = timestamp;
+      const startedAnimations = new Set();
+      for (const [index, item] of this.currentAnimation.items.entries()) {
+        const element = this.$refs[item.ref];
+        element.classList.remove(...element.classList);
+        for (const className of item.preClasses) {
+          element.classList.add(className);
+        }
+        startedAnimations.add(index);
       }
-      animation.progress = (timestamp - animation.startTime) / 1000 / animation.duration;
 
-      if (animation.progress > 1) {
-        this.animationQueue.shift();
+      for (const [index, item] of this.currentAnimation.items.entries()) {
+        const element = this.$refs[item.ref];
+        element.addEventListener('animationend', () => {
+          element.classList.remove(...element.classList);
+          for (const className of item.postClasses) {
+            element.classList.add(className);
+          }
+          startedAnimations.delete(index);
+
+          if (startedAnimations.size === 0) {
+            this.currentAnimation = null;
+            this.advanceAnimation();
+          }
+        },
+        {
+          once: true,
+        });
       }
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.switch {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.switch-off {
+  background-color: red;
+}
+
+.switch-on {
+  background-color: green;
+}
+
+.bot {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.bot-hidden {
+  background-color: grey;
+}
+
+.switch-turn-on {
+  animation-name: switch-turn-on;
+  animation-duration: 5s;
+}
+
+.switch-revert-turn-on {
+  animation-name: switch-revert-turn-on;
+  animation-duration: 1s;
+}
+
+.bot-turn-off {
+  animation-name: bot-turn-off;
+  animation-duration: 5s;
+}
+
+.switch-turn-off {
+  animation-name: switch-turn-off;
+  animation-duration: 5s;
+}
+
+@keyframes switch-turn-on {
+  from {
+    background-color: red;
+  }
+  to {
+    background-color: green;
+  }
+}
+
+@keyframes switch-revert-turn-on {
+  from {
+    background-color: green;
+  }
+  to {
+    background-color: red;
+  }
+}
+
+@keyframes bot-turn-off {
+  from {
+    background-color: grey;
+  }
+  50% {
+    background-color: blue;
+  }
+  to {
+    background-color: grey;
+  }
+}
+
+@keyframes switch-turn-off {
+  from {
+    transform: rotateY(0);
+    background-color: green;
+  }
+  to {
+    transform: rotateY(720deg);
+    background-color: red;
+  }
+}
+</style>
