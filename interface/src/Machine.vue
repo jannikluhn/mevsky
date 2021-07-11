@@ -13,6 +13,7 @@
       </button> -->
       <MachineAnimation
         :state="state"
+        @turnOn="state = {on: true, optimisticOn: true}"
       />
       <button @click="state = {on: false, optimisticOn: true}">Turn on button</button>
       <button @click="state = {on: true, optimisticOn: true}">Turn on chain</button>

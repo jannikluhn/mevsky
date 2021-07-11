@@ -7,7 +7,7 @@
     <div>{{ currentAnimation }}</div> -->
 
     <div ref="switch">
-      <div ref="switch-knob"></div>
+      <div ref="switch-knob" @click="onClick"></div>
     </div>
 
     <div ref="bot"></div>
@@ -245,6 +245,16 @@ export default {
         element.addEventListener('animationend', animationEndListener);
       }
     },
+
+    onClick() {
+      if (this.currentAnimation !== null || this.animationQueue.length !== 0) {
+        return;
+      }
+      if (this.state.on || this.state.optimisticOn) {
+        return;
+      }
+      this.$emit('turnOn');
+    },
   },
 };
 </script>
@@ -297,10 +307,12 @@ $bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
 
 .switch-knob-off {
   left: $switch-knob-left-off;
+  cursor: pointer;
 }
 
 .switch-knob-on {
   left: $switch-knob-left-on;
+  cursor: not-allowed;
 }
 
 .bot {
@@ -344,17 +356,20 @@ $bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
 .switch-knob-turn-on {
   animation-name: switch-knob-turn-on;
   animation-duration: 1s;
+  cursor: not-allowed;
 }
 
 .switch-knob-revert-turn-on {
   animation-name: switch-knob-revert-turn-on;
   animation-duration: 0.3s;
+  cursor: not-allowed;
 }
 
 .switch-knob-turn-off {
   animation-name: switch-knob-turn-off;
   animation-duration: 0.2s;
   animation-delay: 0.6s;
+  cursor: not-allowed;
 }
 
 @keyframes switch-turn-on {
