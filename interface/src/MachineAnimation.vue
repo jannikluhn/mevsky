@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div>
+    <!-- <div>
       <p>Current State: {{ state }}</p>
     </div>
     <div>{{ animationQueue }}</div>
-    <div>{{ currentAnimation }}</div>
+    <div>{{ currentAnimation }}</div> -->
 
-    <div class="switch switch-off" ref="switch"></div>
+    <div ref="switch">
+      <div ref="switch-knob"></div>
+    </div>
 
-    <div class="bot bot-hidden" ref="bot"></div>
+    <div ref="bot"></div>
   </div>
 </template>
 
@@ -19,24 +21,107 @@ function newAnimation(animationItems) {
   };
 }
 
-function newAnimationItem(ref, preClasses, postClasses) {
+function newAnimationItem(ref, preClasses, postClasses, steps) {
   return {
     ref,
     preClasses,
     postClasses,
+    steps,
   };
 }
 
 const turnOnAnimation = newAnimation([
-  newAnimationItem('switch', ['switch', 'switch-off', 'switch-turn-on'], ['switch', 'switch-on']),
+  newAnimationItem(
+    'switch',
+    ['switch', 'switch-off', 'switch-turn-on'],
+    ['switch', 'switch-on'],
+    1,
+  ),
+  newAnimationItem(
+    'switch-knob',
+    ['switch-knob', 'switch-knob-off', 'switch-knob-turn-on'],
+    ['switch-knob', 'switch-knob-on'],
+    1,
+  ),
 ]);
 const revertTurnOnAnimation = newAnimation([
-  newAnimationItem('switch', ['switch', 'switch-on', 'switch-revert-turn-on'], ['switch', 'switch-off']),
+  newAnimationItem(
+    'switch',
+    ['switch', 'switch-on', 'switch-revert-turn-on'],
+    ['switch', 'switch-off'],
+    1,
+  ),
+  newAnimationItem(
+    'switch-knob',
+    ['switch-knob', 'switch-knob-on', 'switch-knob-revert-turn-on'],
+    ['switch-knob', 'switch-knob-off'],
+    1,
+  ),
 ]);
 const turnOffAnimation = newAnimation([
-  newAnimationItem('bot', ['bot', 'bot-hidden', 'bot-turn-off'], ['bot', 'bot-hidden']),
-  newAnimationItem('switch', ['switch', 'switch-on', 'switch-turn-off'], ['switch', 'switch-off']),
+  newAnimationItem('bot',
+    ['bot', 'bot-hidden', 'bot-turn-off'],
+    ['bot', 'bot-hidden'],
+    3),
+  newAnimationItem('switch',
+    ['switch', 'switch-on', 'switch-turn-off'],
+    ['switch', 'switch-off'],
+    1),
+  newAnimationItem('switch-knob',
+    ['switch-knob', 'switch-knob-on', 'switch-knob-turn-off'],
+    ['switch-knob', 'switch-knob-off'],
+    1),
 ]);
+
+// classes for refs if state is on or off
+const initialClasses = {
+  false: [
+    {
+      ref: 'switch',
+      classNames: [
+        'switch',
+        'switch-off',
+      ],
+    },
+    {
+      ref: 'switch-knob',
+      classNames: [
+        'switch-knob',
+        'switch-knob-off',
+      ],
+    },
+    {
+      ref: 'bot',
+      classNames: [
+        'bot',
+        'bot-hidden',
+      ],
+    },
+  ],
+  true: [
+    {
+      ref: 'switch',
+      classNames: [
+        'switch',
+        'switch-on',
+      ],
+    },
+    {
+      ref: 'switch-knob',
+      classNames: [
+        'switch-knob',
+        'switch-knob-on',
+      ],
+    },
+    {
+      ref: 'bot',
+      classNames: [
+        'bot',
+        'bot-hidden',
+      ],
+    },
+  ],
+};
 
 export default {
   name: 'MachineAnimation',
@@ -52,25 +137,52 @@ export default {
 
   watch: {
     state(newState, oldState) {
-      if (oldState === null) {
-        return;
-      }
-      if (oldState.on === newState.on && oldState.optimisticOn === newState.optimisticOn) {
+      if (!oldState) {
+        if (newState !== null) {
+          // apply initial states
+          for (const item of initialClasses[newState.on]) {
+            this.$refs[item.ref].classList.add(...item.classNames);
+          }
+        }
         return;
       }
 
-      if (!oldState.on && !oldState.optimisticOn && !newState.on && newState.optimisticOn) {
+      const noChange = (
+        oldState.on === newState.on
+          && oldState.optimisticOn === newState.optimisticOn
+      );
+      if (noChange) {
+        return;
+      }
+
+      const isOff = !oldState.on && !oldState.optimisticOn;
+      const isOptimisticOn = !oldState.on && oldState.optimisticOn;
+      const isOn = oldState.on && oldState.optimisticOn;
+      if (oldState.on && !oldState.optimisticOn) {
+        console.error('unexpected old state', oldState);
+        return;
+      }
+
+      const willBeOff = !newState.on && !newState.optimisticOn;
+      const willBeOptimisticOn = !newState.on && newState.optimisticOn;
+      const willBeOn = newState.on && newState.optimisticOn;
+      if (newState.on && !newState.optimisticOn) {
+        console.error('unexpected new state', newState);
+        return;
+      }
+
+      if (isOff && (willBeOn || willBeOptimisticOn)) {
         this.turnOn();
-      } else if (!oldState.on && !oldState.optimisticOn && newState.on && newState.optimisticOn) {
-        this.turnOn();
-      } else if (!oldState.on && oldState.optimisticOn && newState.on && newState.optimisticOn) {
-        // do nothing
-      } else if (!oldState.on && oldState.optimisticOn && !newState.on && !newState.optimisticOn) {
+      } else if (isOptimisticOn && willBeOff) {
         this.revertTurnOn();
-      } else if (oldState.on && oldState.optimisticOn && !newState.on && !newState.optimisticOn) {
+      } else if (isOptimisticOn && willBeOn) {
+        // do nothing, optimism was justified
+      } else if (isOn && willBeOptimisticOn) {
+        console.error('unexpected state transition from off to optimistic on');
+      } else if (isOn && willBeOff) {
         this.turnOff();
       } else {
-        console.error('unexpected state transition from', oldState, 'to', newState);
+        console.error('unexpected state transition', oldState, newState);
       }
     },
   },
@@ -99,33 +211,38 @@ export default {
       }
       this.currentAnimation = this.animationQueue.shift();
 
-      const startedAnimations = new Set();
+      const animationCounter = {};
       for (const [index, item] of this.currentAnimation.items.entries()) {
         const element = this.$refs[item.ref];
         element.classList.remove(...element.classList);
         for (const className of item.preClasses) {
           element.classList.add(className);
         }
-        startedAnimations.add(index);
+        animationCounter[index] = item.steps;
       }
 
       for (const [index, item] of this.currentAnimation.items.entries()) {
         const element = this.$refs[item.ref];
-        element.addEventListener('animationend', () => {
-          element.classList.remove(...element.classList);
-          for (const className of item.postClasses) {
-            element.classList.add(className);
+        const animationEndListener = () => {
+          animationCounter[index] -= 1;
+          if (animationCounter[index] <= 0) {
+            delete animationCounter[index];
           }
-          startedAnimations.delete(index);
 
-          if (startedAnimations.size === 0) {
+          if (!animationCounter[index]) {
+            element.classList.remove(...element.classList);
+            for (const className of item.postClasses) {
+              element.classList.add(className);
+            }
+            element.removeEventListener('animationend', animationEndListener);
+          }
+
+          if (Object.keys(animationCounter).length === 0) {
             this.currentAnimation = null;
             this.advanceAnimation();
           }
-        },
-        {
-          once: true,
-        });
+        };
+        element.addEventListener('animationend', animationEndListener);
       }
     },
   },
@@ -133,28 +250,72 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$switch-width: 380px;
+$switch-height: 150px;
+$switch-knob-padding: 12px;
+$switch-border-radius: 20px;
+$switch-border-width: 8px;
+$switch-color: blue;
+
+$switch-knob-size: $switch-height - 2 * $switch-knob-padding;
+
+$switch-knob-left-off: $switch-knob-padding;
+$switch-knob-left-on: $switch-width - $switch-height + $switch-border-width;
+
+$bot-width: 150px;
+$bot-height: 100px;
+
+$bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
+
 .switch {
-  position: relative;
-  width: 100px;
-  height: 100px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -$switch-height / 2 - $switch-border-width;
+  margin-left: -$switch-width / 2 - $switch-border-width;
+  width: $switch-width;
+  height: $switch-height;
+
+  border-style: solid;
+  border-radius: $switch-border-radius;
+  border-width: $switch-border-width;
+  border-color: $switch-color;
 }
 
-.switch-off {
-  background-color: red;
+.switch-on {}
+
+.switch-off {}
+
+.switch-knob {
+  position: absolute;
+  top: $switch-knob-padding;
+  width: $switch-knob-size;
+  height: $switch-knob-size;
+  background-color: $switch-color;
+  border-radius: $switch-border-radius;
 }
 
-.switch-on {
-  background-color: green;
+.switch-knob-off {
+  left: $switch-knob-left-off;
+}
+
+.switch-knob-on {
+  left: $switch-knob-left-on;
 }
 
 .bot {
-  position: relative;
-  width: 100px;
-  height: 100px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -$bot-height / 2;
+  margin-left: $bot-margin-left-home;
+  width: $bot-width;
+  height: $bot-height;
+  background-color: red;
 }
 
 .bot-hidden {
-  background-color: grey;
+  opacity: 0;
 }
 
 .switch-turn-on {
@@ -168,53 +329,105 @@ export default {
 }
 
 .bot-turn-off {
-  animation-name: bot-turn-off;
-  animation-duration: 5s;
+  animation-fill-mode: forwards;
+  animation-name: bot-appear, bot-hit, bot-disappear;
+  animation-duration: 0.5s, 0.2s, 0.5s;
+  animation-delay: 0s, 0.5s, 0.85s;
 }
 
 .switch-turn-off {
   animation-name: switch-turn-off;
-  animation-duration: 5s;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+}
+
+.switch-knob-turn-on {
+  animation-name: switch-knob-turn-on;
+  animation-duration: 1s;
+}
+
+.switch-knob-revert-turn-on {
+  animation-name: switch-knob-revert-turn-on;
+  animation-duration: 0.3s;
+}
+
+.switch-knob-turn-off {
+  animation-name: switch-knob-turn-off;
+  animation-duration: 0.2s;
+  animation-delay: 0.6s;
 }
 
 @keyframes switch-turn-on {
-  from {
-    background-color: red;
-  }
-  to {
-    background-color: green;
-  }
+
 }
 
 @keyframes switch-revert-turn-on {
+
+}
+
+@keyframes bot-appear {
   from {
-    background-color: green;
+    opacity: 0%;
   }
   to {
-    background-color: red;
+    opacity: 100%;
   }
 }
 
-@keyframes bot-turn-off {
+@keyframes bot-disappear {
   from {
-    background-color: grey;
-  }
-  50% {
-    background-color: blue;
+    opacity: 100%;
   }
   to {
-    background-color: grey;
+    opacity: 0%;
+  }
+}
+
+@keyframes bot-hit {
+  0% {
+    margin-left: $bot-margin-left-home;
+  }
+  50% {
+    margin-left: $bot-margin-left-home - 160px;
+  }
+  100% {
+    margin-left: $bot-margin-left-home;
   }
 }
 
 @keyframes switch-turn-off {
+  // from {
+  //   transform: rotateY(0);
+  // }
+  // to {
+  //   transform: rotateY(900deg);
+  // }
+}
+
+@keyframes switch-knob-turn-on {
   from {
-    transform: rotateY(0);
-    background-color: green;
+    left: $switch-knob-left-off;
   }
   to {
-    transform: rotateY(720deg);
-    background-color: red;
+    left: $switch-knob-left-on;
+  }
+}
+
+@keyframes switch-knob-revert-turn-on {
+  from {
+    left: $switch-knob-left-on;
+  }
+  to {
+    left: $switch-knob-left-off;
+  }
+}
+
+@keyframes switch-knob-turn-off {
+  from {
+    left: $switch-knob-left-on;
+  }
+  to {
+    left: $switch-knob-left-off;
   }
 }
 </style>

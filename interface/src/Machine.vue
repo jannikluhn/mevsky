@@ -5,12 +5,12 @@
       Loading...
     </p>
     <div>
-      <button
+      <!-- <button
         :disabled="buttonDisabled"
         @click="onClickButton"
       >
         Turn on
-      </button>
+      </button> -->
       <MachineAnimation
         :state="state"
       />
