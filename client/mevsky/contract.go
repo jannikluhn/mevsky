@@ -27,7 +27,7 @@ var (
 )
 
 // MevskyABI is the input ABI used to generate the binding from.
-const MevskyABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minBounty\",\"type\":\"uint256\"}],\"name\":\"MinBountySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"}],\"name\":\"TurnedOff\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"bounty\",\"type\":\"uint256\"}],\"name\":\"TurnedOn\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"minBounty\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"on\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newMinBounty\",\"type\":\"uint256\"}],\"name\":\"setMinBounty\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"receiver\",\"type\":\"address\"}],\"name\":\"turnOff\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"turnOn\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}]"
+const MevskyABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minBounty\",\"type\":\"uint256\"}],\"name\":\"MinBountySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"}],\"name\":\"TurnedOff\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"bounty\",\"type\":\"uint256\"}],\"name\":\"TurnedOn\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"minBounty\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"on\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newMinBounty\",\"type\":\"uint256\"}],\"name\":\"setMinBounty\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"receiver\",\"type\":\"address\"}],\"name\":\"turnOff\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"turnOn\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}]"
 
 // Mevsky is an auto generated Go binding around an Ethereum contract.
 type Mevsky struct {
@@ -725,13 +725,14 @@ func (it *MevskyTurnedOffIterator) Close() error {
 
 // MevskyTurnedOff represents a TurnedOff event raised by the Mevsky contract.
 type MevskyTurnedOff struct {
+	Sender   common.Address
 	Receiver common.Address
 	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterTurnedOff is a free log retrieval operation binding the contract event 0x5bd0ded7f3a6710e01c75062c0eb193fc026930098b14f9fd962e1317067a157.
+// FilterTurnedOff is a free log retrieval operation binding the contract event 0xd28965104f41e1c22f14e8ca0830937d0010b11925ed052c9db6a8c472f68410.
 //
-// Solidity: event TurnedOff(address receiver)
+// Solidity: event TurnedOff(address sender, address receiver)
 func (_Mevsky *MevskyFilterer) FilterTurnedOff(opts *bind.FilterOpts) (*MevskyTurnedOffIterator, error) {
 
 	logs, sub, err := _Mevsky.contract.FilterLogs(opts, "TurnedOff")
@@ -741,9 +742,9 @@ func (_Mevsky *MevskyFilterer) FilterTurnedOff(opts *bind.FilterOpts) (*MevskyTu
 	return &MevskyTurnedOffIterator{contract: _Mevsky.contract, event: "TurnedOff", logs: logs, sub: sub}, nil
 }
 
-// WatchTurnedOff is a free log subscription operation binding the contract event 0x5bd0ded7f3a6710e01c75062c0eb193fc026930098b14f9fd962e1317067a157.
+// WatchTurnedOff is a free log subscription operation binding the contract event 0xd28965104f41e1c22f14e8ca0830937d0010b11925ed052c9db6a8c472f68410.
 //
-// Solidity: event TurnedOff(address receiver)
+// Solidity: event TurnedOff(address sender, address receiver)
 func (_Mevsky *MevskyFilterer) WatchTurnedOff(opts *bind.WatchOpts, sink chan<- *MevskyTurnedOff) (event.Subscription, error) {
 
 	logs, sub, err := _Mevsky.contract.WatchLogs(opts, "TurnedOff")
@@ -778,9 +779,9 @@ func (_Mevsky *MevskyFilterer) WatchTurnedOff(opts *bind.WatchOpts, sink chan<- 
 	}), nil
 }
 
-// ParseTurnedOff is a log parse operation binding the contract event 0x5bd0ded7f3a6710e01c75062c0eb193fc026930098b14f9fd962e1317067a157.
+// ParseTurnedOff is a log parse operation binding the contract event 0xd28965104f41e1c22f14e8ca0830937d0010b11925ed052c9db6a8c472f68410.
 //
-// Solidity: event TurnedOff(address receiver)
+// Solidity: event TurnedOff(address sender, address receiver)
 func (_Mevsky *MevskyFilterer) ParseTurnedOff(log types.Log) (*MevskyTurnedOff, error) {
 	event := new(MevskyTurnedOff)
 	if err := _Mevsky.contract.UnpackLog(event, "TurnedOff", log); err != nil {
@@ -859,13 +860,14 @@ func (it *MevskyTurnedOnIterator) Close() error {
 
 // MevskyTurnedOn represents a TurnedOn event raised by the Mevsky contract.
 type MevskyTurnedOn struct {
+	Sender common.Address
 	Bounty *big.Int
 	Raw    types.Log // Blockchain specific contextual infos
 }
 
-// FilterTurnedOn is a free log retrieval operation binding the contract event 0x1e4ee824371beb9d98ccaa8792e4e4e73012b547e6b63e34e191fa970fb8d088.
+// FilterTurnedOn is a free log retrieval operation binding the contract event 0x5b2e6c18c22664823d5331a9c424e9c0d88836da420e7d77e3cb42a7d245ab46.
 //
-// Solidity: event TurnedOn(uint256 bounty)
+// Solidity: event TurnedOn(address sender, uint256 bounty)
 func (_Mevsky *MevskyFilterer) FilterTurnedOn(opts *bind.FilterOpts) (*MevskyTurnedOnIterator, error) {
 
 	logs, sub, err := _Mevsky.contract.FilterLogs(opts, "TurnedOn")
@@ -875,9 +877,9 @@ func (_Mevsky *MevskyFilterer) FilterTurnedOn(opts *bind.FilterOpts) (*MevskyTur
 	return &MevskyTurnedOnIterator{contract: _Mevsky.contract, event: "TurnedOn", logs: logs, sub: sub}, nil
 }
 
-// WatchTurnedOn is a free log subscription operation binding the contract event 0x1e4ee824371beb9d98ccaa8792e4e4e73012b547e6b63e34e191fa970fb8d088.
+// WatchTurnedOn is a free log subscription operation binding the contract event 0x5b2e6c18c22664823d5331a9c424e9c0d88836da420e7d77e3cb42a7d245ab46.
 //
-// Solidity: event TurnedOn(uint256 bounty)
+// Solidity: event TurnedOn(address sender, uint256 bounty)
 func (_Mevsky *MevskyFilterer) WatchTurnedOn(opts *bind.WatchOpts, sink chan<- *MevskyTurnedOn) (event.Subscription, error) {
 
 	logs, sub, err := _Mevsky.contract.WatchLogs(opts, "TurnedOn")
@@ -912,9 +914,9 @@ func (_Mevsky *MevskyFilterer) WatchTurnedOn(opts *bind.WatchOpts, sink chan<- *
 	}), nil
 }
 
-// ParseTurnedOn is a log parse operation binding the contract event 0x1e4ee824371beb9d98ccaa8792e4e4e73012b547e6b63e34e191fa970fb8d088.
+// ParseTurnedOn is a log parse operation binding the contract event 0x5b2e6c18c22664823d5331a9c424e9c0d88836da420e7d77e3cb42a7d245ab46.
 //
-// Solidity: event TurnedOn(uint256 bounty)
+// Solidity: event TurnedOn(address sender, uint256 bounty)
 func (_Mevsky *MevskyFilterer) ParseTurnedOn(log types.Log) (*MevskyTurnedOn, error) {
 	event := new(MevskyTurnedOn)
 	if err := _Mevsky.contract.UnpackLog(event, "TurnedOn", log); err != nil {

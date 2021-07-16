@@ -13,9 +13,11 @@ contract MEVsky is Ownable {
     error BountyTooSmall(uint256, uint256);
 
     event TurnedOn(
+        address sender,
         uint256 bounty
     );
     event TurnedOff(
+        address sender,
         address receiver
     );
     event MinBountySet(
@@ -36,6 +38,7 @@ contract MEVsky is Ownable {
         on = true;
 
         emit TurnedOn({
+            sender: msg.sender,
             bounty: msg.value
         });
     }
@@ -48,6 +51,7 @@ contract MEVsky is Ownable {
         on = false;
 
         emit TurnedOff({
+            sender: msg.sender,
             receiver: receiver
         });
 
