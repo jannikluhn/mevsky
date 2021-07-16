@@ -273,7 +273,7 @@ $switch-knob-left-off: $switch-knob-padding;
 $switch-knob-left-on: $switch-width - $switch-height + $switch-border-width;
 
 $bot-width: 150px;
-$bot-height: 100px;
+$bot-height: 150px;
 
 $bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
 
@@ -323,7 +323,9 @@ $bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
   margin-left: $bot-margin-left-home;
   width: $bot-width;
   height: $bot-height;
-  background-color: red;
+  background-image: url("./assets/boxing-glove-512.png");
+  background-size: 100% 100%;
+  transform: rotate(-90deg);
 }
 
 .bot-hidden {
@@ -343,8 +345,8 @@ $bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
 .bot-turn-off {
   animation-fill-mode: forwards;
   animation-name: bot-appear, bot-hit, bot-disappear;
-  animation-duration: 0.5s, 0.2s, 0.5s;
-  animation-delay: 0s, 0.5s, 0.85s;
+  animation-duration: 0.5s, 0.3s, 0.5s;
+  animation-delay: 0s, 0.5s, 1.5s;
 }
 
 .switch-turn-off {
@@ -368,7 +370,7 @@ $bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
 .switch-knob-turn-off {
   animation-name: switch-knob-turn-off;
   animation-duration: 0.2s;
-  animation-delay: 0.6s;
+  animation-delay: 0.68s;
   cursor: not-allowed;
 }
 
@@ -403,6 +405,9 @@ $bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
     margin-left: $bot-margin-left-home;
   }
   50% {
+    margin-left: $bot-margin-left-home + 25px;
+  }
+  75% {
     margin-left: $bot-margin-left-home - 160px;
   }
   100% {

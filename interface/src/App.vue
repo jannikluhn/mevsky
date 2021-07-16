@@ -5,18 +5,21 @@
       @chainChecked="correctChain = $event"
     />
     <Machine v-if="correctChain" />
+    <Bar />
   </div>
 </template>
 
 <script>
 import ChainChecker from './ChainChecker.vue';
 import Machine from './Machine.vue';
+import Bar from './Bar.vue';
 
 export default {
   name: 'App',
   components: {
     ChainChecker,
     Machine,
+    Bar,
   },
 
   data() {
