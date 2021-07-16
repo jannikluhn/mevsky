@@ -2,73 +2,29 @@ package main
 
 import (
 	"context"
-	"crypto/ecdsa"
 	"log"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/jannikluhn/mevsky/searcher/mevsky"
+	"github.com/jannikluhn/mevsky/client/mevsky"
 	"github.com/pkg/errors"
 )
 
-const rpcUrl = "wss://goerli.infura.io/ws/v3/cb47771bf3324acc895994de6752654b"
-const contractAddressHex = "0x57badf6DED5934E90Ce9dD40BD958C1Dc58Fcd97"
-const privateKeyHex = ""
 const retryInterval = 5 * time.Second
 const logInterval = 5 * time.Second
-
-type Connection struct {
-	Client     *ethclient.Client
-	Contract   *mevsky.Mevsky
-	SigningKey *ecdsa.PrivateKey
-	Auth       *bind.TransactOpts
-}
-
-func NewConnection(ctx context.Context) (Connection, error) {
-	log.Println("Connecting to node at URL", rpcUrl)
-	client, err := ethclient.Dial(rpcUrl)
-	if err != nil {
-		return Connection{}, errors.Wrap(err, "failed to connect to Ethereum node")
-	}
-
-	log.Println("Querying chain ID")
-	chainID, err := client.ChainID(ctx)
-	if err != nil {
-		return Connection{}, errors.Wrap(err, "failed to query chain id")
-	}
-
-	log.Println("Creating contract instance at address", contractAddressHex)
-	contractAddress := common.HexToAddress(contractAddressHex)
-	contract, err := mevsky.NewMevsky(contractAddress, client)
-	if err != nil {
-		return Connection{}, errors.Wrap(err, "faild to create contract instance")
-	}
-
-	signingKey, err := crypto.HexToECDSA(privateKeyHex)
-	if err != nil {
-		return Connection{}, errors.Wrap(err, "failed to parse private key")
-	}
-	auth, err := bind.NewKeyedTransactorWithChainID(signingKey, chainID)
-	if err != nil {
-		return Connection{}, errors.Wrapf(err, "failed to create transactor")
-	}
-
-	return Connection{
-		Client:     client,
-		Contract:   contract,
-		SigningKey: signingKey,
-		Auth:       auth,
-	}, nil
-}
 
 func main() {
 	ctx := context.Background()
 
+	connectionConfig := mevsky.ConnectionConfig{
+		RpcUrl:             "wss://goerli.infura.io/ws/v3/cb47771bf3324acc895994de6752654b",
+		ContractAddressHex: "0x57badf6DED5934E90Ce9dD40BD958C1Dc58Fcd97",
+		SigningKeyHex:      "",
+	}
+
 	for {
-		conn, err := NewConnection(ctx)
+		conn, err := mevsky.NewConnection(ctx, connectionConfig)
 		if err != nil {
 			log.Println("Error:", err)
 			time.Sleep(retryInterval)
@@ -91,7 +47,7 @@ func main() {
 	}
 }
 
-func eventLoop(ctx context.Context, conn Connection) error {
+func eventLoop(ctx context.Context, conn mevsky.Connection) error {
 	watchOpts := bind.WatchOpts{
 		Start:   nil,
 		Context: ctx,
@@ -121,7 +77,7 @@ func eventLoop(ctx context.Context, conn Connection) error {
 	}
 }
 
-func turnOff(ctx context.Context, conn Connection) error {
+func turnOff(ctx context.Context, conn mevsky.Connection) error {
 	log.Println("Check if contract is on")
 	callOpts := bind.CallOpts{
 		Pending: true,
