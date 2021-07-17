@@ -1,16 +1,9 @@
 <template>
   <div>
-    <!-- <div>
-      <p>Current State: {{ state }}</p>
-    </div>
-    <div>{{ animationQueue }}</div>
-    <div>{{ currentAnimation }}</div> -->
-
-    <div ref="switch">
-      <div ref="switch-knob" @click="onClick"></div>
-    </div>
-
-    <div ref="bot"></div>
+    <div class="machine"></div>
+    <div ref="switch"></div>
+    <div ref="arm"></div>
+    <button class="switch-button" @click="onClick"></button>
   </div>
 </template>
 
@@ -37,12 +30,6 @@ const turnOnAnimation = newAnimation([
     ['switch', 'switch-on'],
     1,
   ),
-  newAnimationItem(
-    'switch-knob',
-    ['switch-knob', 'switch-knob-off', 'switch-knob-turn-on'],
-    ['switch-knob', 'switch-knob-on'],
-    1,
-  ),
 ]);
 const revertTurnOnAnimation = newAnimation([
   newAnimationItem(
@@ -51,25 +38,15 @@ const revertTurnOnAnimation = newAnimation([
     ['switch', 'switch-off'],
     1,
   ),
-  newAnimationItem(
-    'switch-knob',
-    ['switch-knob', 'switch-knob-on', 'switch-knob-revert-turn-on'],
-    ['switch-knob', 'switch-knob-off'],
-    1,
-  ),
 ]);
 const turnOffAnimation = newAnimation([
-  newAnimationItem('bot',
-    ['bot', 'bot-hidden', 'bot-turn-off'],
-    ['bot', 'bot-hidden'],
-    3),
   newAnimationItem('switch',
     ['switch', 'switch-on', 'switch-turn-off'],
     ['switch', 'switch-off'],
     1),
-  newAnimationItem('switch-knob',
-    ['switch-knob', 'switch-knob-on', 'switch-knob-turn-off'],
-    ['switch-knob', 'switch-knob-off'],
+  newAnimationItem('arm',
+    ['arm', 'arm-off', 'arm-turn-off'],
+    ['arm', 'arm-off'],
     1),
 ]);
 
@@ -84,17 +61,10 @@ const initialClasses = {
       ],
     },
     {
-      ref: 'switch-knob',
+      ref: 'arm',
       classNames: [
-        'switch-knob',
-        'switch-knob-off',
-      ],
-    },
-    {
-      ref: 'bot',
-      classNames: [
-        'bot',
-        'bot-hidden',
+        'arm',
+        'arm-off',
       ],
     },
   ],
@@ -107,17 +77,10 @@ const initialClasses = {
       ],
     },
     {
-      ref: 'switch-knob',
+      ref: 'arm',
       classNames: [
-        'switch-knob',
-        'switch-knob-on',
-      ],
-    },
-    {
-      ref: 'bot',
-      classNames: [
-        'bot',
-        'bot-hidden',
+        'arm',
+        'arm-on',
       ],
     },
   ],
@@ -260,194 +223,132 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$switch-width: 380px;
-$switch-height: 150px;
-$switch-knob-padding: 12px;
-$switch-border-radius: 20px;
-$switch-border-width: 8px;
-$switch-color: blue;
 
-$switch-knob-size: $switch-height - 2 * $switch-knob-padding;
-
-$switch-knob-left-off: $switch-knob-padding;
-$switch-knob-left-on: $switch-width - $switch-height + $switch-border-width;
-
-$bot-width: 150px;
-$bot-height: 150px;
-
-$bot-margin-left-home: $switch-width / 2 + $switch-border-width + 150px;
-
-.switch {
+.part {
+  background-repeat: no-repeat;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  margin-top: -$switch-height / 2 - $switch-border-width;
-  margin-left: -$switch-width / 2 - $switch-border-width;
-  width: $switch-width;
-  height: $switch-height;
-
-  border-style: solid;
-  border-radius: $switch-border-radius;
-  border-width: $switch-border-width;
-  border-color: $switch-color;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
-.switch-on {}
-
-.switch-off {}
-
-.switch-knob {
-  position: absolute;
-  top: $switch-knob-padding;
-  width: $switch-knob-size;
-  height: $switch-knob-size;
-  background-color: $switch-color;
-  border-radius: $switch-border-radius;
-}
-
-.switch-knob-off {
-  left: $switch-knob-left-off;
+.switch-button {
+  position: fixed;
+  left: calc(50% - 60px);
+  top: calc(50% - 150px);
+  width: 60px;
+  height: 100px;
+  background-color: red;
+  opacity: 0;
   cursor: pointer;
 }
 
-.switch-knob-on {
-  left: $switch-knob-left-on;
-  cursor: not-allowed;
+//
+// Machine
+//
+
+.machine {
+  @extend .part;
+  background-image: url("./assets/machine.png");
+  background-position: 50% 50%;
+  z-index: 0;
 }
 
-.bot {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  margin-top: -$bot-height / 2;
-  margin-left: $bot-margin-left-home;
-  width: $bot-width;
-  height: $bot-height;
-  background-image: url("./assets/boxing-glove-512.png");
-  background-size: 100% 100%;
-  transform: rotate(-90deg);
+//
+// Switch
+//
+
+$switch-angle-off: -23deg;
+$switch-angle-on: 0deg;
+
+.switch {
+  @extend .part;
+  background-image: url("./assets/switch.png");
+  background-position: calc(50% - 18px) calc(50% - 100px);
+  z-index: -2;
+  transform-origin: calc(50% - 25px) calc(50% - 68px);
+
+  // width: 10px;
+  // height: 10px;
+  // background-color: red;
+  // position: absolute;
+  // left: calc(50% - 25px);
+  // top: calc(50% - 68px);
+  // z-index: 100;
 }
 
-.bot-hidden {
-  opacity: 0;
+.switch-off {
+  transform: rotate($switch-angle-off);
+}
+
+.switch-on {
+  transform: rotate($switch-angle-on);
 }
 
 .switch-turn-on {
   animation-name: switch-turn-on;
-  animation-duration: 5s;
+  animation-duration: 0.5s;
+
+  @keyframes switch-turn-on {
+    from {transform: rotate($switch-angle-off)};
+    to {transform: rotate($switch-angle-on)};
+  }
 }
 
 .switch-revert-turn-on {
   animation-name: switch-revert-turn-on;
-  animation-duration: 1s;
-}
+  animation-duration: 0.5s;
 
-.bot-turn-off {
-  animation-fill-mode: forwards;
-  animation-name: bot-appear, bot-hit, bot-disappear;
-  animation-duration: 0.5s, 0.3s, 0.5s;
-  animation-delay: 0s, 0.5s, 1.5s;
+  @keyframes switch-revert-turn-on {
+    from {transform: rotate($switch-angle-on)};
+    to {transform: rotate($switch-angle-off)};
+  }
 }
 
 .switch-turn-off {
   animation-name: switch-turn-off;
-  animation-duration: 0.5s;
-  animation-timing-function: ease-out;
-}
-
-.switch-knob-turn-on {
-  animation-name: switch-knob-turn-on;
-  animation-duration: 1s;
-  cursor: not-allowed;
-}
-
-.switch-knob-revert-turn-on {
-  animation-name: switch-knob-revert-turn-on;
-  animation-duration: 0.3s;
-  cursor: not-allowed;
-}
-
-.switch-knob-turn-off {
-  animation-name: switch-knob-turn-off;
   animation-duration: 0.2s;
-  animation-delay: 0.68s;
-  cursor: not-allowed;
-}
+  animation-delay: 0.35s;
 
-@keyframes switch-turn-on {
-
-}
-
-@keyframes switch-revert-turn-on {
-
-}
-
-@keyframes bot-appear {
-  from {
-    opacity: 0%;
-  }
-  to {
-    opacity: 100%;
+  @keyframes switch-turn-off {
+    from {transform: rotate($switch-angle-on)};
+    to {transform: rotate($switch-angle-off)};
   }
 }
 
-@keyframes bot-disappear {
-  from {
-    opacity: 100%;
-  }
-  to {
-    opacity: 0%;
-  }
+//
+// Arm
+//
+
+$arm-angle-off: 65deg;
+$arm-angle-on: 0deg;
+
+.arm {
+  @extend .part;
+  background-image: url("./assets/arm.png");
+  background-position: calc(50% - 30px) calc(50% - 25px);
+  transform-origin: calc(50% - 30px) calc(50% - 25px);
+  z-index: -1;
 }
 
-@keyframes bot-hit {
-  0% {
-    margin-left: $bot-margin-left-home;
-  }
-  50% {
-    margin-left: $bot-margin-left-home + 25px;
-  }
-  75% {
-    margin-left: $bot-margin-left-home - 160px;
-  }
-  100% {
-    margin-left: $bot-margin-left-home;
-  }
+.arm-off {
+  transform: rotate($arm-angle-off);
 }
 
-@keyframes switch-turn-off {
-  // from {
-  //   transform: rotateY(0);
-  // }
-  // to {
-  //   transform: rotateY(900deg);
-  // }
+.arm-on {
+  transform: rotate($arm-angle-on);
 }
 
-@keyframes switch-knob-turn-on {
-  from {
-    left: $switch-knob-left-off;
-  }
-  to {
-    left: $switch-knob-left-on;
-  }
-}
+.arm-turn-off {
+  animation-name: arm-turn-off;
+  animation-duration: 1s;
 
-@keyframes switch-knob-revert-turn-on {
-  from {
-    left: $switch-knob-left-on;
-  }
-  to {
-    left: $switch-knob-left-off;
-  }
-}
-
-@keyframes switch-knob-turn-off {
-  from {
-    left: $switch-knob-left-on;
-  }
-  to {
-    left: $switch-knob-left-off;
+  @keyframes arm-turn-off {
+    0% {transform: rotate($arm-angle-off)};
+    50% {transform: rotate($arm-angle-on)};
+    100% {transform: rotate($arm-angle-off)};
   }
 }
 </style>
