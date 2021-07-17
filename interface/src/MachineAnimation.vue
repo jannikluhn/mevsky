@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div class="machine"></div>
     <div ref="switch"></div>
     <div ref="arm"></div>
@@ -226,7 +226,7 @@ export default {
 
 .part {
   background-repeat: no-repeat;
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   width: 100%;
@@ -234,6 +234,20 @@ export default {
   pointer-events: none;
 }
 
+.container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(2);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+//
+// Button
+//
 .switch-button {
   position: fixed;
   left: calc(50% - 60px);
@@ -242,6 +256,15 @@ export default {
   height: 100px;
   background-color: red;
   opacity: 0;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.switch-button-off {
+  cursor: pointer;
+}
+
+.switch-button-on {
   cursor: pointer;
 }
 
