@@ -3,7 +3,7 @@
     <div class="machine"></div>
     <div ref="switch"></div>
     <div ref="arm"></div>
-    <button class="switch-button" @click="onClick"></button>
+    <button ref="button" @click="onClick"></button>
   </div>
 </template>
 
@@ -30,6 +30,12 @@ const turnOnAnimation = newAnimation([
     ['switch', 'switch-on'],
     1,
   ),
+  newAnimationItem(
+    'button',
+    [],
+    ['switch-button', 'switch-button-on'],
+    0,
+  ),
 ]);
 const revertTurnOnAnimation = newAnimation([
   newAnimationItem(
@@ -37,6 +43,12 @@ const revertTurnOnAnimation = newAnimation([
     ['switch', 'switch-on', 'switch-revert-turn-on'],
     ['switch', 'switch-off'],
     1,
+  ),
+  newAnimationItem(
+    'button',
+    [],
+    ['switch-button', 'switch-button-off'],
+    0,
   ),
 ]);
 const turnOffAnimation = newAnimation([
@@ -48,6 +60,12 @@ const turnOffAnimation = newAnimation([
     ['arm', 'arm-off', 'arm-turn-off'],
     ['arm', 'arm-off'],
     1),
+  newAnimationItem(
+    'button',
+    [],
+    ['switch-button', 'switch-button-off'],
+    0,
+  ),
 ]);
 
 // classes for refs if state is on or off
@@ -67,6 +85,13 @@ const initialClasses = {
         'arm-off',
       ],
     },
+    {
+      ref: 'button',
+      classNames: [
+        'switch-button',
+        'switch-button-off',
+      ],
+    },
   ],
   true: [
     {
@@ -81,6 +106,13 @@ const initialClasses = {
       classNames: [
         'arm',
         'arm-on',
+      ],
+    },
+    {
+      ref: 'button',
+      classNames: [
+        'switch-button',
+        'switch-button-on',
       ],
     },
   ],
@@ -178,34 +210,42 @@ export default {
       for (const [index, item] of this.currentAnimation.items.entries()) {
         const element = this.$refs[item.ref];
         element.classList.remove(...element.classList);
-        for (const className of item.preClasses) {
-          element.classList.add(className);
+        if (item.steps > 0) {
+          for (const className of item.preClasses) {
+            element.classList.add(className);
+          }
+          animationCounter[index] = item.steps;
+        } else {
+          for (const className of item.postClasses) {
+            element.classList.add(className);
+          }
         }
-        animationCounter[index] = item.steps;
       }
 
       for (const [index, item] of this.currentAnimation.items.entries()) {
-        const element = this.$refs[item.ref];
-        const animationEndListener = () => {
-          animationCounter[index] -= 1;
-          if (animationCounter[index] <= 0) {
-            delete animationCounter[index];
-          }
-
-          if (!animationCounter[index]) {
-            element.classList.remove(...element.classList);
-            for (const className of item.postClasses) {
-              element.classList.add(className);
+        if (item.steps > 0) {
+          const element = this.$refs[item.ref];
+          const animationEndListener = () => {
+            animationCounter[index] -= 1;
+            if (animationCounter[index] <= 0) {
+              delete animationCounter[index];
             }
-            element.removeEventListener('animationend', animationEndListener);
-          }
 
-          if (Object.keys(animationCounter).length === 0) {
-            this.currentAnimation = null;
-            this.advanceAnimation();
-          }
-        };
-        element.addEventListener('animationend', animationEndListener);
+            if (!animationCounter[index]) {
+              element.classList.remove(...element.classList);
+              for (const className of item.postClasses) {
+                element.classList.add(className);
+              }
+              element.removeEventListener('animationend', animationEndListener);
+            }
+
+            if (Object.keys(animationCounter).length === 0) {
+              this.currentAnimation = null;
+              this.advanceAnimation();
+            }
+          };
+          element.addEventListener('animationend', animationEndListener);
+        }
       }
     },
 
@@ -240,7 +280,7 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  transform: scale(2);
+  transform: scale(1);
   transform-origin: 50% 50%;
   pointer-events: none;
 }
@@ -265,7 +305,7 @@ export default {
 }
 
 .switch-button-on {
-  cursor: pointer;
+  cursor: wait;
 }
 
 //
