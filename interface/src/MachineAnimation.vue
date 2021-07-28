@@ -3,6 +3,8 @@
     <div class="machine"></div>
     <div ref="switch"></div>
     <div ref="arm"></div>
+    <div ref="lid"></div>
+    <div ref="light"></div>
     <button ref="button" @click="onClick"></button>
   </div>
 </template>
@@ -31,6 +33,12 @@ const turnOnAnimation = newAnimation([
     1,
   ),
   newAnimationItem(
+    'light',
+    [],
+    ['light', 'light-on'],
+    0,
+  ),
+  newAnimationItem(
     'button',
     [],
     ['switch-button', 'switch-button-on'],
@@ -43,6 +51,12 @@ const revertTurnOnAnimation = newAnimation([
     ['switch', 'switch-on', 'switch-revert-turn-on'],
     ['switch', 'switch-off'],
     1,
+  ),
+  newAnimationItem(
+    'light',
+    [],
+    ['light', 'light-off'],
+    0,
   ),
   newAnimationItem(
     'button',
@@ -59,7 +73,19 @@ const turnOffAnimation = newAnimation([
   newAnimationItem('arm',
     ['arm', 'arm-off', 'arm-turn-off'],
     ['arm', 'arm-off'],
-    1),
+    4),
+  newAnimationItem(
+    'lid',
+    ['lid', 'lid-closed', 'lid-opening'],
+    ['lid', 'lid-closed'],
+    2,
+  ),
+  newAnimationItem(
+    'light',
+    [],
+    ['light', 'light-off'],
+    0,
+  ),
   newAnimationItem(
     'button',
     [],
@@ -86,6 +112,20 @@ const initialClasses = {
       ],
     },
     {
+      ref: 'lid',
+      classNames: [
+        'lid',
+        'lid-closed',
+      ],
+    },
+    {
+      ref: 'light',
+      classNames: [
+        'light',
+        'light-off',
+      ],
+    },
+    {
       ref: 'button',
       classNames: [
         'switch-button',
@@ -105,7 +145,21 @@ const initialClasses = {
       ref: 'arm',
       classNames: [
         'arm',
-        'arm-on',
+        'arm-off',
+      ],
+    },
+    {
+      ref: 'lid',
+      classNames: [
+        'lid',
+        'lid-closed',
+      ],
+    },
+    {
+      ref: 'light',
+      classNames: [
+        'light',
+        'light-on',
       ],
     },
     {
@@ -288,14 +342,15 @@ export default {
 //
 // Button
 //
+
 .switch-button {
   position: fixed;
-  left: calc(50% - 60px);
-  top: calc(50% - 150px);
-  width: 60px;
-  height: 100px;
+  left: calc(50% - 350px);
+  top: calc(50% - 430px);
+  width: 350px;
+  height: 300px;
   background-color: red;
-  opacity: 0;
+  opacity: 0%;
   pointer-events: auto;
   cursor: pointer;
 }
@@ -314,7 +369,7 @@ export default {
 
 .machine {
   @extend .part;
-  background-image: url("./assets/machine.png");
+  background-image: url("./assets/box.png");
   background-position: 50% 50%;
   z-index: 0;
 }
@@ -323,23 +378,15 @@ export default {
 // Switch
 //
 
-$switch-angle-off: -23deg;
-$switch-angle-on: 0deg;
+$switch-angle-off: -30deg;
+$switch-angle-on: 30deg;
 
 .switch {
   @extend .part;
-  background-image: url("./assets/switch.png");
-  background-position: calc(50% - 18px) calc(50% - 100px);
+  background-image: url("./assets/switch_2.png");
+  background-position: calc(50% - 175px) calc(50% - 200px);
   z-index: -2;
-  transform-origin: calc(50% - 25px) calc(50% - 68px);
-
-  // width: 10px;
-  // height: 10px;
-  // background-color: red;
-  // position: absolute;
-  // left: calc(50% - 25px);
-  // top: calc(50% - 68px);
-  // z-index: 100;
+  transform-origin: calc(50% - 175px) calc(50% - 130px);
 }
 
 .switch-off {
@@ -372,8 +419,8 @@ $switch-angle-on: 0deg;
 
 .switch-turn-off {
   animation-name: switch-turn-off;
-  animation-duration: 0.2s;
-  animation-delay: 0.35s;
+  animation-duration: 0.1s;
+  animation-delay: 2.4s;
 
   @keyframes switch-turn-off {
     from {transform: rotate($switch-angle-on)};
@@ -385,14 +432,15 @@ $switch-angle-on: 0deg;
 // Arm
 //
 
-$arm-angle-off: 65deg;
-$arm-angle-on: 0deg;
+$arm-angle-off: 43deg;
+$arm-angle-peek: 10deg;
+$arm-angle-on: -45deg;
 
 .arm {
   @extend .part;
-  background-image: url("./assets/arm.png");
-  background-position: calc(50% - 30px) calc(50% - 25px);
-  transform-origin: calc(50% - 30px) calc(50% - 25px);
+  background-image: url("./assets/arm_2.png");
+  background-position: calc(50% - 60px) calc(50% - 100px);
+  transform-origin: calc(50% - 60px) calc(50% - 100px);
   z-index: -1;
 }
 
@@ -405,13 +453,83 @@ $arm-angle-on: 0deg;
 }
 
 .arm-turn-off {
-  animation-name: arm-turn-off;
-  animation-duration: 1s;
+  animation-name: arm-peek, arm-hit, arm-pull-back, arm-hide;
+  animation-duration: 0.8s, 0.1s, 0.1s, 0.7s;
+  animation-delay: 0.7s, 2.3s, 2.4s, 3.0s;
+  animation-timing-function: ease, linear, linear, ease;
+  animation-fill-mode: forwards;
 
-  @keyframes arm-turn-off {
-    0% {transform: rotate($arm-angle-off)};
-    50% {transform: rotate($arm-angle-on)};
+  @keyframes arm-peek {
+    0% {transfrom: rotate($arm-angle-off)};
+    100% {transform: rotate($arm-angle-peek)};
+  }
+
+  @keyframes arm-hit {
+    0% {transfrom: rotate($arm-angle-peek)};
+    100% {transform: rotate($arm-angle-on)};
+  }
+
+  @keyframes arm-pull-back {
+    0% {transfrom: rotate($arm-angle-on)};
+    100% {transform: rotate($arm-angle-peek)};
+  }
+
+  @keyframes arm-hide {
+    0% {transfrom: rotate($arm-angle-peek)};
     100% {transform: rotate($arm-angle-off)};
   }
+}
+
+//
+// Lid
+//
+$lid-angle-closed: 0deg;
+$lid-angle-open: 90deg;
+
+.lid {
+  @extend .part;
+  background-image: url("./assets/lid.png");
+  background-position: calc(50% + 250px) calc(50% - 150px);
+  transform-origin: calc(50% + 250px) calc(50% - 150px);
+  z-index: -1;
+}
+
+.lid-closed {
+
+}
+
+.lid-opening {
+  animation-name: lid-opening, lid-closing;
+  animation-duration: 0.2s, 0.2s;
+  animation-delay: 0s, 3.5s;
+  animation-fill-mode: forwards;
+
+  @keyframes lid-opening {
+    0% {transform: rotate($lid-angle-closed)};
+    100% {transform: rotate($lid-angle-open)};
+  }
+
+  @keyframes lid-closing {
+    0% {transform: rotate($lid-angle-open)};
+    100% {transform: rotate($lid-angle-closed)};
+  }
+}
+
+//
+// Light
+//
+
+.light {
+  @extend .part;
+  background-position: calc(50% - 312px) calc(50% - 55px);
+  z-index: 1;
+}
+
+.light-off {
+  background-image: url("./assets/off.png");
+}
+
+.light-on {
+  background-image: url("./assets/on.png");
 }
 </style>

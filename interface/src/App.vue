@@ -1,31 +1,69 @@
 <template>
   <div id="app">
-    <ChainChecker
-      v-if="!correctChain"
-      @chainChecked="correctChain = $event"
+    <Machine
+      v-if="provider && contract"
+      :provider="provider"
+      :contract="contract"
+      :network="network"
+      @error="error = $event"
     />
-    <Machine v-if="correctChain" />
+    <Error v-if="error" :error="error" />
     <Bar />
   </div>
 </template>
 
 <script>
-import ChainChecker from './ChainChecker.vue';
+import { ethers } from 'ethers';
+
+import * as config from './config';
+import * as contractMetadata from './assets/MEVsky.json';
 import Machine from './Machine.vue';
 import Bar from './Bar.vue';
+import Error from './Error.vue';
 
 export default {
   name: 'App',
   components: {
-    ChainChecker,
     Machine,
+    Error,
     Bar,
   },
 
   data() {
     return {
-      correctChain: null,
+      network: null,
+      provider: null,
+      contract: null,
+      error: null,
     };
+  },
+
+  async mounted() {
+    // Use wallet provider, if user has a wallet and it is connected to the right network.
+    // Otherwise, use backup provider for now. We will ask them to switch when they try to click
+    // the machine's switch.
+    let provider;
+    if (this.$hasWalletConnection) {
+      try {
+        this.network = await this.$provider.getNetwork();
+        if (this.network.chainId === config.chainId) {
+          provider = this.$provider;
+        } else {
+          provider = this.$backupProvider;
+        }
+      } catch (e) {
+        this.error = {
+          error: e,
+          message: 'Failed to query network',
+        };
+        provider = this.$backupProvider;
+      }
+    } else {
+      provider = this.$backupProvider;
+    }
+
+    this.provider = provider;
+    this.contract = new ethers.Contract(config.contractAddress, contractMetadata.abi, provider);
   },
 };
 </script>

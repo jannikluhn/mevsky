@@ -1,19 +1,9 @@
 <template>
   <div>
-    <p v-if="error">{{ error.message }}</p>
-    <p v-else-if="loading">
-      Loading...
-    </p>
     <div>
-      <!-- <button
-        :disabled="buttonDisabled"
-        @click="onClickButton"
-      >
-        Turn on
-      </button> -->
       <MachineAnimation
         :state="state"
-        @turnOn="state = {on: true, optimisticOn: true}"
+        @turnOn="onClickButton"
       />
       <button @click="state = {on: false, optimisticOn: true}">Turn on button</button>
       <button @click="state = {on: true, optimisticOn: true}">Turn on chain</button>
@@ -24,16 +14,23 @@
 </template>
 
 <script>
+import { ethers } from 'ethers';
+
+import * as config from './config';
 import MachineAnimation from './MachineAnimation.vue';
 
 export default {
   name: 'Machine',
+  props: [
+    'provider',
+    'contract',
+    'network',
+  ],
   components: {
     MachineAnimation,
   },
   data() {
     return {
-      error: null,
       state: null,
       minBounty: null,
 
@@ -44,21 +41,13 @@ export default {
     loading() {
       return this.state === null;
     },
-    buttonDisabled() {
-      return (
-        !this.$hasWalletConnection
-        || this.loading
-        || this.state.on
-        || this.txInFlight
-      );
-    },
   },
 
   async mounted() {
-    this.$contract.on('TurnedOn', this.onTurnedOn);
-    this.$contract.on('TurnedOff', this.onTurnedOff);
+    this.contract.on('TurnedOn', this.onTurnedOn);
+    this.contract.on('TurnedOff', this.onTurnedOff);
 
-    this.$contract.functions.on()
+    this.contract.functions.on()
       .then(([on]) => {
         this.state = {
           on,
@@ -66,21 +55,21 @@ export default {
         };
       })
       .catch((e) => {
-        this.error = {
+        this.$emit('error', {
           error: e,
           message: 'Failed to query machine status',
-        };
+        });
       });
 
-    this.$contract.minBounty()
+    this.contract.minBounty()
       .then((minBounty) => {
         this.minBounty = minBounty;
       })
       .catch((e) => {
-        this.error = {
+        this.$emit('error', {
           error: e,
           message: 'Failed to query minimum bounty',
-        };
+        });
       });
   },
 
@@ -100,36 +89,62 @@ export default {
     },
 
     async onClickButton() {
-      if (this.buttonDisabled) {
+      if (this.txInFlight || !this.state || this.state.on || this.state.optimisticOn) {
         return;
       }
       this.txInFlight = true;
 
-      try {
-        await window.ethereum.request({ method: 'eth_requestAccounts', params: [] });
-      } catch (e) {
-        this.error = {
-          error: e,
-          message: 'Failed to request accounts.',
-        };
+      if (!this.$hasWalletConnection) {
+        this.$emit('error', {
+          error: null,
+          message: 'To turn on the machine, you need a browser wallet such as Metamask. Please '
+          + 'install one and try again.',
+        });
         this.txInFlight = false;
-        console.error(e);
         return;
       }
 
-      const signer = this.$provider.getSigner();
-      const signingContract = this.$contract.connect(signer);
+      // If the user's wallet is connected to the wrong chain, ask them to switch.
+      if (!this.network || this.network.chainId !== config.chainId) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: ethers.BigNumber.from(config.chainId).toHexString() }],
+          });
+        } catch (e) {
+          this.$emit('error', {
+            error: e,
+            message: 'Failed to change network.',
+          });
+          this.txInFlight = false;
+          return;
+        }
+      }
+
+      // Request accounts
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts', params: [] });
+      } catch (e) {
+        this.$emit('error', {
+          error: e,
+          message: 'Failed to request accounts.',
+        });
+        this.txInFlight = false;
+        return;
+      }
+
+      const signer = this.provider.getSigner();
+      const signingContract = this.contract.connect(signer);
 
       let tx;
       try {
         tx = await signingContract.turnOn({ value: this.minBounty });
       } catch (e) {
-        this.error = {
+        this.$emit('error', {
           error: e,
           message: 'Failed to send transaction.',
-        };
+        });
         this.txInFlight = false;
-        console.error(e);
         return;
       }
 
@@ -141,16 +156,15 @@ export default {
       try {
         await tx.wait();
       } catch (e) {
-        this.error = {
+        this.$emit('error', {
           error: e,
           message: 'Transaction failed.',
-        };
+        });
         this.state = {
           on: this.state.on,
           optimisticOn: this.state.on, // we're realistic now
         };
         this.txInFlight = false;
-        console.error(e);
         return;
       }
 
