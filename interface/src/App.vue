@@ -6,8 +6,10 @@
       :contract="contract"
       :network="network"
       @error="error = $event"
+      @showInfo="infoShown = true"
     />
     <Error v-if="error" :error="error" />
+    <Info v-if="infoShown" @close="infoShown = false" />
     <Bar />
   </div>
 </template>
@@ -20,12 +22,14 @@ import * as contractMetadata from './assets/MEVsky.json';
 import Machine from './Machine.vue';
 import Bar from './Bar.vue';
 import Error from './Error.vue';
+import Info from './Info.vue';
 
 export default {
   name: 'App',
   components: {
     Machine,
     Error,
+    Info,
     Bar,
   },
 
@@ -35,6 +39,8 @@ export default {
       provider: null,
       contract: null,
       error: null,
+
+      infoShown: false,
     };
   },
 
@@ -71,5 +77,6 @@ export default {
 <style>
 body {
   background-color: #F8D2FF;
+  font-family: Arial, Helvetica, sans-serif;
 }
 </style>

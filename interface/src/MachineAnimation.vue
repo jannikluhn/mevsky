@@ -6,6 +6,7 @@
     <div ref="lid"></div>
     <div ref="light"></div>
     <button ref="button" @click="onClick"></button>
+    <button class="info-button" @click="$emit('showInfo')"></button>
   </div>
 </template>
 
@@ -337,6 +338,18 @@ export default {
   transform: scale(1);
   transform-origin: 50% 50%;
   pointer-events: none;
+}
+
+.info-button {
+  position: fixed;
+  left: calc(50% - 355px);
+  top: calc(50% - 0px);
+  width: 80px;
+  height: 80px;
+  background-color: blue;
+  opacity: 0%;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 //
