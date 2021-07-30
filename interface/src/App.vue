@@ -8,8 +8,12 @@
       @error="error = $event"
       @showInfo="infoShown = true"
     />
-    <Error v-if="error" :error="error" @close="error = null" />
-    <Info v-if="infoShown" @close="infoShown = false" />
+    <transition name="box-transition">
+      <Error v-if="error" :error="error" @close="error = null" />
+    </transition>
+    <transition name="box-transition">
+      <Info v-if="infoShown" @close="infoShown = false" />
+    </transition>
     <Bar />
   </div>
 </template>

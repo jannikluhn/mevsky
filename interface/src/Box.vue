@@ -87,4 +87,19 @@ h1 {
 .close-button span{
   display: none;
 }
+
+.box-transition-enter-active {
+  animation: fade-in 0.1s;
+}
+.box-transition-leave-active {
+  animation: fade-in 0.1s reverse;
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
 </style>
