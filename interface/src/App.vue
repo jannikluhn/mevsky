@@ -8,7 +8,7 @@
       @error="error = $event"
       @showInfo="infoShown = true"
     />
-    <Error v-if="error" :error="error" />
+    <Error v-if="error" :error="error" @close="error = null" />
     <Info v-if="infoShown" @close="infoShown = false" />
     <Bar />
   </div>
