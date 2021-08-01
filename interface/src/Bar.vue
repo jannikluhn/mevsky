@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="bar">
-      <a href="https://blockscout.com"><img class="icon" src="./assets/ethereum-100.png"></a>
+      <a href="https://blockscout.com/xdai/mainnet/address/0xeCbb670751ED019b021A062E30dfdf22Bc3fe8d9/">
+        <img class="icon" src="./assets/ethereum-100.png">
+      </a>
       <a href="https://github.com/jannikluhn/mevsky"><img class="icon" src="./assets/octocat-100.png"></a>
     </div>
   </div>
