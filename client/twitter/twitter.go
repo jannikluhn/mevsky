@@ -110,7 +110,6 @@ func makeTurnOnMessage(ev *mevsky.MevskyTurnedOn) string {
 	return fmt.Sprintf(
 		"✨ Account %s just switched me on! %s",
 		ev.Sender.Hex(),
-		ev.Raw.BlockNumber,
 		makeBlockscoutUrl(ev.Raw.TxHash),
 	)
 }
@@ -119,7 +118,6 @@ func makeTurnOffMessage(ev *mevsky.MevskyTurnedOff) string {
 	return fmt.Sprintf(
 		"😞 Account %s just switched me off 💤 %s",
 		ev.Sender.Hex(),
-		ev.Raw.BlockNumber,
 		makeBlockscoutUrl(ev.Raw.TxHash),
 	)
 }
