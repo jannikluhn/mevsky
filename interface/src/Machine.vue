@@ -6,10 +6,6 @@
         @turnOn="onClickButton"
         @showInfo="$emit('showInfo')"
       />
-      <button @click="state = {on: false, optimisticOn: true}">Turn on button</button>
-      <button @click="state = {on: true, optimisticOn: true}">Turn on chain</button>
-      <button @click="state = {on: false, optimisticOn: false}">Turn off</button>
-      <button @click="state = {on: false, optimisticOn: false}">revert</button>
     </div>
   </div>
 </template>
