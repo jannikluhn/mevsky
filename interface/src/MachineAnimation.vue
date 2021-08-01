@@ -522,7 +522,7 @@ $lid-angle-open: 90deg;
 .lid-opening {
   animation-name: lid-opening, lid-closing;
   animation-duration: 0.2s, 0.2s;
-  animation-delay: 0s, 3.5s;
+  animation-delay: 0s, 3.23s;
   animation-fill-mode: forwards;
 
   @keyframes lid-opening {
