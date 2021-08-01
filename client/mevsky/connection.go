@@ -48,7 +48,7 @@ func NewConnection(ctx context.Context, config ConnectionConfig) (Connection, er
 	var auth *bind.TransactOpts
 	var signingKey *ecdsa.PrivateKey
 	if config.SigningKeyHex != "" {
-		signingKey, err := crypto.HexToECDSA(config.SigningKeyHex)
+		signingKey, err = crypto.HexToECDSA(config.SigningKeyHex)
 		if err != nil {
 			return Connection{}, errors.Wrap(err, "failed to parse signing key")
 		}
