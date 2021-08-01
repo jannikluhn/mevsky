@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="bar">
-      <a href="https://blockscout.com"><img class="icon" src="./assets/eth-diamond-glyph.png"></a>
-      <a href="https://github.com/jannikluhn/mevsky"><img class="icon" src="./assets/GitHub-Mark-64px.png"></a>
+      <a href="https://blockscout.com"><img class="icon" src="./assets/ethereum-100.png"></a>
+      <a href="https://github.com/jannikluhn/mevsky"><img class="icon" src="./assets/octocat-100.png"></a>
     </div>
   </div>
 </template>
@@ -20,8 +20,8 @@ export default {
   right: 25px;
 }
 .icon {
-  height: 64px;
-  margin: 20px;
+  height: 54px;
+  margin: 15px 5px;
   opacity: 30%;
 }
 .icon:hover {

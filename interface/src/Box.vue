@@ -36,7 +36,6 @@ export default {
   bottom: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.8);
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,25 +49,30 @@ export default {
   border-width: 5px;
   border-radius: 20px;
   overflow: hidden;
-
   box-shadow: 0px 0px 70px 40px darkgrey;
 }
 
 .box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding-left: 1em;
   padding-right: 1em;
-  padding-top: 1em;
+  padding-top: 0.5em;
   padding-bottom: 0.5em;
 }
 
 .box-body {
-  padding-left: 1em;
-  padding-right: 1em;
+  padding: 0 1.5em;
 }
 
 h1 {
   display: inline-block;
-  margin: 0;
+  margin: 0 0 0 0.2em;
+}
+
+a {
+  color: #5d30dd;
 }
 
 .close-button {

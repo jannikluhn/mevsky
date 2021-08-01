@@ -335,7 +335,7 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  transform: scale(1);
+  transform: scale(0.5);
   transform-origin: 50% 50%;
   pointer-events: none;
 }
@@ -396,7 +396,7 @@ $switch-angle-on: 30deg;
 
 .switch {
   @extend .part;
-  background-image: url("./assets/switch_2.png");
+  background-image: url("./assets/switch.png");
   background-position: calc(50% - 175px) calc(50% - 200px);
   z-index: -2;
   transform-origin: calc(50% - 175px) calc(50% - 130px);
@@ -451,7 +451,7 @@ $arm-angle-on: -45deg;
 
 .arm {
   @extend .part;
-  background-image: url("./assets/arm_2.png");
+  background-image: url("./assets/arm.png");
   background-position: calc(50% - 60px) calc(50% - 100px);
   transform-origin: calc(50% - 60px) calc(50% - 100px);
   z-index: -1;
