@@ -79,8 +79,16 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap');
+
 body {
   background-color: #F8D2FF;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Nunito', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-variant: all-small-caps;
 }
 </style>
