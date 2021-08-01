@@ -26,7 +26,7 @@ func main() {
 	ctx := context.Background()
 
 	connectionConfig := mevsky.ConnectionConfig{
-		RpcUrl:             "https://rpc.xdaichain.com/",
+		RpcUrl:             "wss://rpc.xdaichain.com/wss",
 		ContractAddressHex: "0xeCbb670751ED019b021A062E30dfdf22Bc3fe8d9",
 		SigningKeyHex:      "",
 	}
