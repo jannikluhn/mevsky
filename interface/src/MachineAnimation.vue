@@ -331,13 +331,21 @@ export default {
 
 .container {
   position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  left: -50%;
+  top: -50%;
+  width: 200%;
+  height: 200%;
   transform: scale(0.5);
   transform-origin: 50% 50%;
   pointer-events: none;
+
+  @media screen and (max-width: 450px) {
+    left: -116.5%;
+    top: -116.5%;
+    width: 333%;
+    height: 333%;
+    transform: scale(0.3);
+  }
 }
 
 .info-button {
