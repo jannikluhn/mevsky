@@ -18,6 +18,7 @@ export default {
   position: fixed;
   bottom: 0;
   right: 25px;
+  z-index: -1;
 }
 .icon {
   height: 54px;
