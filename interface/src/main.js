@@ -7,7 +7,9 @@ Vue.config.productionTip = false;
 
 let provider;
 let hasWalletConnection;
-const backupProvider = new ethers.providers.JsonRpcProvider(config.backupRPCProviderUrl);
+const backupProvider = new ethers.providers.JsonRpcProvider(
+  config.backupRPCProviderURL,
+);
 
 if (window.ethereum) {
   provider = new ethers.providers.Web3Provider(window.ethereum);
