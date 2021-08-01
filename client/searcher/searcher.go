@@ -18,8 +18,8 @@ func main() {
 	ctx := context.Background()
 
 	connectionConfig := mevsky.ConnectionConfig{
-		RpcUrl:             "wss://goerli.infura.io/ws/v3/cb47771bf3324acc895994de6752654b",
-		ContractAddressHex: "0x57badf6DED5934E90Ce9dD40BD958C1Dc58Fcd97",
+		RpcUrl:             "https://rpc.xdaichain.com/",
+		ContractAddressHex: "0xeCbb670751ED019b021A062E30dfdf22Bc3fe8d9",
 		SigningKeyHex:      "",
 	}
 

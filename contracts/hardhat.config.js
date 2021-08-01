@@ -19,6 +19,12 @@ module.exports = {
         process.env.DEPLOY_KEY_GOERLI,
       ],
     },
+    xdai: {
+      url: "https://rpc.xdaichain.com/",
+      accounts: [
+        process.env.DEPLOY_KEY_XDAI,
+      ],
+    }
   },
 };
 
