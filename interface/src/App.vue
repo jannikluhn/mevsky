@@ -64,7 +64,7 @@ export default {
       } catch (e) {
         this.error = {
           error: e,
-          message: 'Failed to query network',
+          message: 'Failed to query network.',
         };
         provider = this.$backupProvider;
       }

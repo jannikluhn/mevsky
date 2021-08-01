@@ -58,7 +58,7 @@ export default {
       .catch((e) => {
         this.$emit('error', {
           error: e,
-          message: 'Failed to query machine status',
+          message: 'Failed to query machine status.',
         });
       });
 
@@ -69,7 +69,7 @@ export default {
       .catch((e) => {
         this.$emit('error', {
           error: e,
-          message: 'Failed to query minimum bounty',
+          message: 'Failed to query minimum bounty amount.',
         });
       });
   },
