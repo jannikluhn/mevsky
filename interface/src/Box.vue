@@ -50,6 +50,7 @@ export default {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0px 0px 70px 40px darkgrey;
+  margin: 40px;
 }
 
 .box-header {
