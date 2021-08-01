@@ -108,7 +108,7 @@ func tweet(client *twitter.Client, message string) error {
 
 func makeTurnOnMessage(ev *mevsky.MevskyTurnedOn) string {
 	return fmt.Sprintf(
-		"The Useless Machine has been turned on by %s in block #%d: %s",
+		"✨ Account %s just switched me on! %s",
 		ev.Sender.Hex(),
 		ev.Raw.BlockNumber,
 		makeBlockscoutUrl(ev.Raw.TxHash),
@@ -117,7 +117,7 @@ func makeTurnOnMessage(ev *mevsky.MevskyTurnedOn) string {
 
 func makeTurnOffMessage(ev *mevsky.MevskyTurnedOff) string {
 	return fmt.Sprintf(
-		"The Useless Machine has been turned off by %s in block #%d: %s",
+		"😞 Account %s just switched me off 💤 %s",
 		ev.Sender.Hex(),
 		ev.Raw.BlockNumber,
 		makeBlockscoutUrl(ev.Raw.TxHash),
