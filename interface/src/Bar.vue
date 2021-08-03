@@ -25,9 +25,9 @@ export default {
 .icon {
   height: 54px;
   margin: 15px 5px;
-  opacity: 30%;
+  opacity: 0.3;
 }
 .icon:hover {
-  opacity: 70%;
+  opacity: 0.7;
 }
 </style>

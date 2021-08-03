@@ -78,14 +78,14 @@ a {
 
 .close-button {
   float: right;
-  background-image: url(./assets/cancel.png);
+  background-image: url("./assets/cancel.png");
   background-color: transparent;
   background-position: 50% 50%;
   width: 30px;
   height: 30px;
   background-size: 30px;
   border: 0;
-  opacity: 100%;
+  opacity: 1.0;
   cursor: pointer;
 }
 
