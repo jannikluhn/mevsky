@@ -8,7 +8,7 @@
       turning the machine off again.
     </p>
     <p>
-      The useless machine smart contract is deployed on the
+      The Useless MEV Machine is deployed on the
       <a
         href="https://blockscout.com/xdai/mainnet/address/0xeCbb670751ED019b021A062E30dfdf22Bc3fe8d9/"
       >
