@@ -4,7 +4,8 @@
     <div ref="switch"></div>
     <div ref="arm"></div>
     <div ref="lid"></div>
-    <div ref="light"></div>
+    <div ref="light-off"></div>
+    <div ref="light-on"></div>
     <button ref="button" @click="onClick"></button>
     <button class="info-button" @click="$emit('showInfo')"></button>
   </div>
@@ -34,10 +35,16 @@ const turnOnAnimation = newAnimation([
     1,
   ),
   newAnimationItem(
-    'light',
-    [],
-    ['light', 'light-on'],
-    0,
+    'light-off',
+    ['light-off', 'light-off-off', 'light-off-turn-on'],
+    ['light-off', 'light-off-on'],
+    1,
+  ),
+  newAnimationItem(
+    'light-on',
+    ['light-on', 'light-on-off', 'light-on-turn-on'],
+    ['light-on', 'light-on-on'],
+    1,
   ),
   newAnimationItem(
     'button',
@@ -54,10 +61,16 @@ const revertTurnOnAnimation = newAnimation([
     1,
   ),
   newAnimationItem(
-    'light',
-    [],
-    ['light', 'light-off'],
-    0,
+    'light-off',
+    ['light-off', 'light-off-on', 'light-off-turn-off'],
+    ['light-off', 'light-off-off'],
+    1,
+  ),
+  newAnimationItem(
+    'light-on',
+    ['light-on', 'light-on-on', 'light-on-turn-off'],
+    ['light-on', 'light-on-off'],
+    1,
   ),
   newAnimationItem(
     'button',
@@ -82,10 +95,16 @@ const turnOffAnimation = newAnimation([
     2,
   ),
   newAnimationItem(
-    'light',
-    [],
-    ['light', 'light-off'],
-    0,
+    'light-off',
+    ['light-off', 'light-off-on', 'light-off-turn-off', 'light-turn-off-delayed'],
+    ['light-off', 'light-off-off'],
+    1,
+  ),
+  newAnimationItem(
+    'light-on',
+    ['light-on', 'light-on-on', 'light-on-turn-off', 'light-turn-off-delayed'],
+    ['light-on', 'light-on-off'],
+    1,
   ),
   newAnimationItem(
     'button',
@@ -120,10 +139,17 @@ const initialClasses = {
       ],
     },
     {
-      ref: 'light',
+      ref: 'light-off',
       classNames: [
-        'light',
         'light-off',
+        'light-off-off',
+      ],
+    },
+    {
+      ref: 'light-on',
+      classNames: [
+        'light-on',
+        'light-on-off',
       ],
     },
     {
@@ -157,10 +183,17 @@ const initialClasses = {
       ],
     },
     {
-      ref: 'light',
+      ref: 'light-off',
       classNames: [
-        'light',
+        'light-off',
+        'light-off-on',
+      ],
+    },
+    {
+      ref: 'light-on',
+      classNames: [
         'light-on',
+        'light-on-on',
       ],
     },
     {
@@ -547,10 +580,76 @@ $lid-angle-open: 90deg;
 }
 
 .light-off {
+  @extend .light;
   background-image: url("./assets/off.png");
 }
 
+.light-off-off {
+  opacity: 1.0;
+}
+
+.light-off-on {
+  opacity: 0.0;
+}
+
 .light-on {
+  @extend .light;
   background-image: url("./assets/on.png");
+}
+
+.light-on-off {
+  opacity: 0.0;
+}
+
+.light-on-on {
+  opacity: 1.0;
+}
+
+.light-off-turn-on {
+  animation-name: light-off-turn-on;
+  animation-duration: 0.1s;
+  animation-fill-mode: forwards;
+
+  @keyframes light-off-turn-on {
+    0% {opacity: 1.0};
+    100% {opacity: 0.0};
+  }
+}
+
+.light-off-turn-off {
+  animation-name: light-off-turn-off;
+  animation-duration: 0.1s;
+  animation-fill-mode: forwards;
+
+  @keyframes light-off-turn-off {
+    0% {opacity: 0.0};
+    100% {opacity: 1.0};
+  }
+}
+
+.light-on-turn-on {
+  animation-name: light-on-turn-on;
+  animation-duration: 0.1s;
+  animation-fill-mode: forwards;
+
+  @keyframes light-on-turn-on {
+    0% {opacity: 0.0};
+    100% {opacity: 1.0};
+  }
+}
+
+.light-on-turn-off {
+  animation-name: light-on-turn-off;
+  animation-duration: 0.1s;
+  animation-fill-mode: forwards;
+
+  @keyframes light-on-turn-off {
+    0% {opacity: 1.0};
+    100% {opacity: 0.0};
+  }
+}
+
+.light-turn-off-delayed {
+  animation-delay: 2.4s;
 }
 </style>
