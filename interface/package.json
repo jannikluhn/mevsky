@@ -10,7 +10,8 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "ethers": "^5.4.0",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-loader": "^16.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
