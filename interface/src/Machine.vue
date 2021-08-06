@@ -111,7 +111,7 @@ export default {
         } catch (e) {
           this.$emit('error', {
             error: e,
-            message: 'Failed to change network.',
+            message: 'Failed to switch to xDai network.',
           });
           this.txInFlight = false;
           return;
