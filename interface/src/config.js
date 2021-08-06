@@ -17,4 +17,19 @@ module.exports = {
   backupRPCProviderURL: 'https://rpc.xdaichain.com/',
   contractAddress: '0xeCbb670751ED019b021A062E30dfdf22Bc3fe8d9',
   chainId: 100,
+  addEthereumChainSettings: {
+    chainId: '0x64',
+    chainName: 'xDai',
+    nativeCurrency: {
+      name: 'xDai',
+      symbol: 'xDai',
+      decimals: 18,
+    },
+    rpcUrls: [
+      'https://rpc.xdaichain.com/',
+    ],
+    blockExplorerUrls: [
+      'https://blockscout.com/xdai/mainnet',
+    ],
+  },
 };

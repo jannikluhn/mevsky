@@ -108,11 +108,28 @@ export default {
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: ethers.BigNumber.from(config.chainId).toHexString() }],
           });
-        } catch (e) {
-          this.$emit('error', {
-            error: e,
-            message: 'Failed to switch to xDai network.',
-          });
+        } catch (switchError) {
+          // if the network doesn't exist, add it
+          if (switchError.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  config.addEthereumChainSettings,
+                ],
+              });
+            } catch (addError) {
+              this.$emit('error', {
+                error: addError,
+                message: 'Failed to add xDai network.',
+              });
+            }
+          } else {
+            this.$emit('error', {
+              error: switchError,
+              message: 'Failed to switch to xDai network.',
+            });
+          }
           this.txInFlight = false;
           return;
         }
